@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum billing_cycle {
+  MONTHLY
+  YEARLY
+  WEEKLY
+  ONE_TIME
+}
+
+enum payment_status {
+  SUCCESS
+  FAILED
+  PENDING
+}
+
+enum alert_type {
+  RENEWAL_REMINDER
+  PAYMENT_DUE
+  PRICE_INCREASE
+  TRIAL_EXPIRY
+}
+
+enum subscription_category {
+  STREAMING
+  PRODUCTIVITY
+  SAAS
+  CLOUD_STORAGE
+  GAMING
+  OTHER
+}
+
+model user {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  password   String
+  salt       String?
+  phone      String?  @unique
+  otp        Int?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model subscription {
+  id             String              @id @default(uuid())
+  user_id        String
+  name           String
+  provider       String?
+  category       subscription_category
+  amount         Decimal
+  billing_cycle  billing_cycle
+  renewal_date   DateTime
+  auto_renewal   Boolean  @default(true)
+  trial          Boolean  @default(false)
+  shared_with    String?
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@index([user_id])
+}
+
+model reminder_logs {
+  id              String       @id @default(uuid())
+  user_id         String
+  subscription_id String
+  alert_type      alert_type
+  sent_at         DateTime     @default(now())
+
+  @@index([user_id])
+  @@index([subscription_id])
+}
