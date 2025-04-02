@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "/api/checkSubscription.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/checkSubscription.js",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}
